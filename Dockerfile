@@ -31,7 +31,7 @@ RUN --mount=type=cache,target=/home/nonroot/.cache/go-build,uid=65532,gid=65532 
 
 RUN	go get -u ./... && \	
 	go mod tidy && \
-    CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -v -ldflags="-s -w" -mod=mod
+    GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -buildmode=pie -v -ldflags="-s -w" -mod=mod
 
 	WORKDIR /config
 
@@ -57,7 +57,7 @@ RUN	go get -u ./... && \
 	
 	COPY dnsprobe/ ./
 	
-	RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -o /usr/local/bin/dnsprobe .
+	RUN  GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -buildmode=pie -o /usr/local/bin/dnsprobe .
 	
 	# ----------------------------------------------------------------------------
 	FROM scratch
