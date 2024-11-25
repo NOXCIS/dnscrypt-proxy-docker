@@ -19,10 +19,7 @@ WORKDIR /src/dnscrypt-proxy
 
 # Fetch and tidy Go modules
 RUN --mount=type=cache,target=/home/nonroot/.cache/go-build,uid=65532,gid=65532 \
-    --mount=type=cache,target=/go/pkg
-    
-
-ARG TARGETOS TARGETARCH TARGETVARIANT
+    --mount=type=cache,target=/go/pk
 
 RUN --mount=type=cache,target=/home/nonroot/.cache/go-build,uid=65532,gid=65532 \
     --mount=type=cache,target=/go/pkg 
@@ -31,7 +28,7 @@ RUN --mount=type=cache,target=/home/nonroot/.cache/go-build,uid=65532,gid=65532 
 
 RUN	go get -u ./... && \	
 	go mod tidy && \
-    GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -buildmode=pie -v -ldflags="-s -w" -mod=mod
+ 	go build -buildmode=pie -v -ldflags="-s -w" -mod=mod
 
 	WORKDIR /config
 
@@ -50,14 +47,10 @@ RUN	go get -u ./... && \
 	
 	WORKDIR /src/dnsprobe
 	
-
-
-
-	ARG TARGETOS TARGETARCH TARGETVARIANT
 	
 	COPY dnsprobe/ ./
 	
-	RUN  GOOS=$TARGETOS GOARCH=$TARGETARCH GOARM=${TARGETVARIANT#v} go build -buildmode=pie -o /usr/local/bin/dnsprobe .
+	RUN  go build -buildmode=pie -o /usr/local/bin/dnsprobe .
 	
 	# ----------------------------------------------------------------------------
 	FROM scratch
